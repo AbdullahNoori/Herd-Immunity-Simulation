@@ -4,102 +4,89 @@ from virus import Virus
 
 
 class Person(object):
-    ''' Person objects will populate the simulation. '''
-
-    def __init__(self, _id, is_vaccinated, virus=None, infection=None):
-        ''' We start out with is_alive = True, because we don't make vampires or zombies.
-        All other values will be set by the simulation when it makes each Person object.
-        If person is chosen to be infected when the population is created, the simulation
-        should instantiate a Virus object and set it as the value
-        self.infection. Otherwise, self.infection should be set to None.
-        '''
-        self._id = _id  # int
-        self.is_alive = True  # boolean
-        self.is_vaccinated = is_vaccinated  # boolean
-        self.infection = infection  # Virus object or None
-        self.virus = virus
-
-    def did_survive_infection(self):
-        ''' Generate a random number and compare to virus's mortality_rate.
-        If random number is smaller, person dies from the disease.
-        If Person survives, they become vaccinated and they have no infection.
-        Return a boolean value indicating whether they survived the infection.
-        '''
-        # Only called if infection attribute is not None.
-
-        if not self.infection == None:
-            mortality_rate_random = random.randint(0, 100)
-            if self.virus.mortality_rate > mortality_rate_random:
-                self.is_alive = False
-            else:
-                self.is_alive = True
-                self.is_vaccinated = True
-                self.infection = None
-
-        # TODO:  Finish this method. Should return a Boolean
-        return self.is_alive
-
-
-
+   ''' Person objects will populate the simulation. '''
+   def __init__(self, _id, is_vaccinated, infection=None):
+       ''' We start out with is_alive = True, because we don't make vampires or zombies.
+       All other values will be set by the simulation when it makes each Person object.
+       If person is chosen to be infected when the population is created, the simulation
+       should instantiate a Virus object and set it as the value
+       self.infection. Otherwise, self.infection should be set to None.
+       '''
+       self._id = _id  # int
+       self.is_alive = True  # boolean
+       self.is_vaccinated = is_vaccinated  # boolean
+       self.infection = infection  # Virus object or None
+   def did_survive_infection(self, damage=-1):
+       ''' Generate a random number and compare to virus's mortality_rate.
+       If random number is smaller, person dies from the disease.
+       If Person survives, they become vaccinated and they have no infection.
+       Return a boolean value indicating whether they survived the infection.
+       '''
+       # Only called if infection attribute is not None.
+       alive = True
+       if not self.infection == None:
+           if damage == -1:
+               infection_rate = random.randint(0, 100)
+           else:
+               infection_rate = damage
+           if infection_rate < self.infection.mortality_rate:
+               alive = False
+               self.is_alive = alive
+               self.is_vaccinated = False
+           else:
+               self.is_alive = alive
+               self.is_vaccinated = True
+               self.infection = None
+       # TODO:  Finish this method. Should return a Boolean
+       return alive
 ''' These are simple tests to ensure that you are instantiating your Person class correctly. '''
 def test_vacc_person_instantiation():
-    # create some people to test if our init method works as expected
-    person = Person(1, True)
-    assert person._id == 1
-    assert person.is_alive is True
-    assert person.is_vaccinated is True
-    assert person.infection is None
-
-
+   # create some people to test if our init method works as expected
+   person = Person(1, True)
+   assert person._id == 1
+   assert person.is_alive is True
+   assert person.is_vaccinated is True
+   assert person.infection is None
 def test_not_vacc_person_instantiation():
-    person = Person(2, False)
-    # TODO: complete your own assert statements that test
-    # the values at each attribute
-    # assert ...
-    assert person._id == 2
-    assert person.is_alive is True
-    assert person.is_vaccinated is False
-    assert person.infection is None
-
-
+   person = Person(2, False)
+   # TODO: complete your own assert statements that test
+   # the values at each attribute
+   # assert ...
+   assert person._id == 2
+   assert person.is_alive is True
+   assert person.is_vaccinated is False
+   assert person.infection is None
 def test_sick_person_instantiation():
-    # Create a Virus object to give a Person object an infection
-    virus = Virus("Dysentery", 0.7, 0.2)
-    # Create a Person object and give them the virus infection
-    person = Person(3, False, virus)
-    # TODO: complete your own assert statements that test
-    # the values at each attribute
-    # assert ...
-    assert person._id == 3
-    assert person.is_alive is True
-    assert person.is_vaccinated is False
-    assert person.infection is None
-    assert person.virus.name is "Dysentery"
-    assert person.virus.repro_rate == 0.7
-    assert person.virus.mortality_rate == 0.2
+   # Create a Virus object to give a Person object an infection
+   virus = Virus("Dysentery", 0.7, 0.2)
+   # Create a Person object and give them the virus infection
+   person = Person(3, False, virus)
+   # TODO: complete your own assert statements that test
+   # the values at each attribute
+   # assert ...
+   assert person._id == 3
+   assert person.is_alive is True
+   assert person.is_vaccinated is False
+   assert person.infection is virus
+   assert person.infection.name is "Dysentery"
+   assert person.infection.repro_rate == 0.7
+   assert person.infection.mortality_rate == 0.2
 
-
-
-
-
+   
 def test_did_survive_infection():
-    # TODO: Create a Virus object to give a Person object an infection
-    virus = Virus("Dysentery", 0.7, 0.2)
-    # TODO: Create a Person object and give them the virus infection
-    person = Person(4, False, virus)
-
-    # Resolve whether the Person survives the infection or not
-    survived = person.did_survive_infection()
-
-    # Check if the Person survived or not
-    if survived:
-        assert person.is_alive is True
-        # TODO: Write your own assert statements that test
-        # the values of each attribute for a Person who survived
-        # assert ...
-    else:
-        assert person.is_alive is False
-        # TODO: Write your own assert statements that test
-        # the values of each attribute for a Person who did not survive
-        # assert ...
-        pass
+   # TODO: Create a Virus object to give a Person object an infection
+   virus = Virus("Dysentery", 0.7, 0.2)
+   # TODO: Create a Person object and give them the virus infection
+   person = Person(4, False, virus)
+   # Resolve whether the Person survives the infection or not
+   # survived = person.did_survive_infection(0)
+   survived = person.did_survive_infection()
+   # Check if the Person survived or not
+   if survived:
+       assert person.is_alive is True
+       assert person.is_vaccinated is True
+       assert person.infection is None
+   else:
+       assert person.is_alive is False
+       assert person.is_vaccinated is False
+       assert person.infection is not None
